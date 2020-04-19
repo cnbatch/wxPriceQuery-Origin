@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\ui">
+      <UniqueIdentifier>{132c9ccd-bcb6-4970-bafd-4a19b980f65b}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd;xpm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\ui">
+      <UniqueIdentifier>{53130dd9-0ed5-4853-b481-86b1007c47af}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files\query_tools">
+      <UniqueIdentifier>{55bdcc8a-2430-4635-831f-7bbaf8529286}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\query_tools">
+      <UniqueIdentifier>{249c9c6e-c8cc-4d62-a7de-28fe9ef4696e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\query_tools\origin_tools">
+      <UniqueIdentifier>{f4795f48-f260-4423-ad74-7c3240630915}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\query_tools\exchange_rate">
+      <UniqueIdentifier>{0c3337df-55b3-4ce6-a0af-df4b437deb13}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files\query_tools\origin_tools">
+      <UniqueIdentifier>{e549ecc7-fe10-4968-a54e-d04d4145d95c}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files\language">
+      <UniqueIdentifier>{26ab8709-d022-4aaa-8278-a62e6f16ead5}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\languages">
+      <UniqueIdentifier>{2b2aef89-8b9a-4c61-9118-2a3285cda7ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\query_tools\exchange_rate">
+      <UniqueIdentifier>{bb17fa22-2147-43a8-a08a-a8270f3c4164}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="hidpi.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\frame.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\wxPriceQueryForOriginSettingDialog.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\wxPriceQueryForOriginUIFrame.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\wxPriceQueryForOriginLoadingDialog.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="query_tools\origin_tools\OriginQueries.cpp">
+      <Filter>Source Files\query_tools\origin_tools</Filter>
+    </ClCompile>
+    <ClCompile Include="query_tools\CURLGlobalThread.cpp">
+      <Filter>Source Files\query_tools</Filter>
+    </ClCompile>
+    <ClCompile Include="string_utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="languages\languages.cpp">
+      <Filter>Source Files\languages</Filter>
+    </ClCompile>
+    <ClCompile Include="query_tools\exchange_rate\CurrencyAPI.cpp">
+      <Filter>Source Files\query_tools\exchange_rate</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui\frame.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\wxPriceQueryForOriginSettingDialog.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\wxPriceQueryForOriginUIFrame.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="app.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\wxPriceQueryForOriginLoadingDialog.h">
+      <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="query_tools\origin_tools\OriginQueries.hpp">
+      <Filter>Header Files\query_tools\origin_tools</Filter>
+    </ClInclude>
+    <ClInclude Include="query_tools\exchange_rate\CurrencyAPI.hpp">
+      <Filter>Header Files\query_tools\exchange_rate</Filter>
+    </ClInclude>
+    <ClInclude Include="query_tools\CURLGlobalThread.hpp">
+      <Filter>Header Files\query_tools</Filter>
+    </ClInclude>
+    <ClInclude Include="string_utilities.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="languages\languages.hpp">
+      <Filter>Header Files\language</Filter>
+    </ClInclude>
+    <ClInclude Include="languages\en.hpp">
+      <Filter>Header Files\language</Filter>
+    </ClInclude>
+    <ClInclude Include="languages\zh.hpp">
+      <Filter>Header Files\language</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="wxPriceQuery-Origin.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="ui\icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
