@@ -78,7 +78,7 @@ namespace query_tools
 		void UnpackSupercatData(const std::map<std::string, std::string> &two_letter_country_map_to_game_info, const std::map<std::string, std::vector<std::string>> &two_letter_country_map_to_discount_list, const std::string &language_code_underline, std::map<std::string, std::vector<std::string>> &two_letter_country_map_to_discount_offer_id_list);
 		void ConvertBWCurrency(const std::string &two_letter_country_code, const std::string &bioware_virtual_currency_offer_id, const std::vector<std::string> &offer_ids_with_bw);
 		void UpdateDiscountInfo(const std::string &two_letter_country_code, const std::string &offer_id, const std::string &response_string);
-		void RetrieveTranslation(std::string three_letter_country_code, std::string origin_display_language_code);
+		void RetrieveTranslation(const std::string &three_letter_country_code, const std::string &origin_display_language_code);
 
 
 	public:

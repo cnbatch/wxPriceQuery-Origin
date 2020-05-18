@@ -51,12 +51,17 @@ I don't have an Apple Computer, so I can't test and build it in macOS.
 
 Please open ‘*.workspace’ file with CodeLite and complie the project after all dependent packages are configured.
 
+## APIs of Exchange rates
+Two APIs are used in this project:
+* Foreign exchange rates API with currency conversion (Github: [exchangeratesapi](https://github.com/exchangeratesapi/exchangeratesapi); Home Page: [exchangeratesapi.io](https://www.exchangeratesapi.io/))
+* [Free Forex API](https://www.freeforexapi.com/)
+
 ---
 
 简体中文版
 ====
 
-## 概括
+## 概述
 
 如果你在 Origin 平台购买过游戏，或许会知道不同国家/地区会有不同价格，有些区域价格较高，有些价格较低。通常情况下，Origin 只会显示玩家所在地区的价格列表。
 
@@ -101,12 +106,17 @@ Windows 用户强烈建议使用 vcpkg 安装依赖项
 
 配置好依赖项后，可使用 CodeLite 打开 workspace 文件开始编译。
 
+## 使用到的汇率 API
+目前使用以下两个汇率 API:
+* Foreign exchange rates API with currency conversion (Github: [exchangeratesapi](https://github.com/exchangeratesapi/exchangeratesapi); Home Page: [exchangeratesapi.io](https://www.exchangeratesapi.io/))
+* [Free Forex API](https://www.freeforexapi.com/)
+
 ---
 
 繁體中文版
 ====
 
-## 概括
+## 概述
 
 如果你在 Origin 平臺購買過遊戲，或許會知道不同國家/地區會有不同價格，有些區域價格較高，有些價格較低。通常情況下，Origin 只會顯示玩家所在地區的價格列表。
 
@@ -150,3 +160,8 @@ Windows 用戶強烈建議使用 vcpkg 安裝依賴項
 #### BSD / Linux
 
 配置好依賴項後，可使用 CodeLite 打開 workspace 文件開始編譯。
+
+## 使用到的滙率 API
+目前使用以下兩個滙率 API:
+* Foreign exchange rates API with currency conversion (Github: [exchangeratesapi](https://github.com/exchangeratesapi/exchangeratesapi); Home Page: [exchangeratesapi.io](https://www.exchangeratesapi.io/))
+* [Free Forex API](https://www.freeforexapi.com/)

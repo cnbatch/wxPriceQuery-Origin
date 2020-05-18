@@ -114,7 +114,10 @@ namespace languages
 				{"select_region", "Please select a Region."},
 				{"other_genre", "Other Genre"},
 				{"other_franchise", "Other Franchise"},
-				{"other_game_type", "Other Game Type"}
+				{"other_game_type", "Other Game Type"},
+				{"about", "About"},
+				{"this_project", "Repository of this project on GitHub"},
+				{"api_exchange_rate", "APIs of Exchange Rates"}
 			};
 		}
 	};

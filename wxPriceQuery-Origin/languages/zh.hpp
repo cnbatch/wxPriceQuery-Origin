@@ -114,7 +114,10 @@ namespace languages
 				{"select_region", "请选择区域。"},
 				{"other_genre", "其它类别"},
 				{"other_franchise", "其它品牌"},
-				{"other_game_type", "其它游戏类型"}
+				{"other_game_type", "其它游戏类型"},
+				{"about", "关于"},
+				{"this_project", "本软件已在 Github 开源"},
+				{"api_exchange_rate", "使用到的汇率 API"}
 			};
 		}
 	};
@@ -230,8 +233,10 @@ namespace languages
 				{"select_region", "請選擇區域。"},
 				{"other_genre", "其它類別"},
 				{"other_franchise", "其它品牌"},
-				{"other_game_type", "其它遊戲類型"}
-
+				{"other_game_type", "其它遊戲類型"},
+				{"about", "關於"},
+				{"this_project", "本軟件已在 Github 開源"},
+				{"api_exchange_rate", "使用到的滙率 API"}
 			};
 		}
 	};

@@ -31,13 +31,6 @@ class wxPriceQueryForOriginSettingDialog : public SettingDialog
 		wxPriceQueryForOriginSettingDialog( wxWindow* parent );
 	//// end generated class members
 
-
-
-		void SetQueryClass(std::shared_ptr<query_tools::OriginQueries> input_ptr) { queries_ptr = input_ptr; }
-		void SetQueryClass(std::shared_ptr<query_tools::CurrencyAPI> input_ptr) { currency_api_ptr = input_ptr; }
-		void SetQueryClass(std::nullptr_t input_ptr) { queries_ptr = nullptr; currency_api_ptr = nullptr; }
-		bool InitialiseConnections(std::function<void(std::string newmsg)> update_progress);
-		void GetClientSettings(languages::Language &interface_lng, wxString &selected_currency, wxString &origin_lng, wxString &origin_country);
 private:
 	languages::Language current_language;
 	//std::string current_currency;
@@ -50,6 +43,12 @@ private:
 	std::shared_ptr<query_tools::OriginQueries> queries_ptr;
 	std::shared_ptr<query_tools::CurrencyAPI> currency_api_ptr;
 
+public:
+	void SetQueryClass(std::shared_ptr<query_tools::OriginQueries> input_ptr) { queries_ptr = input_ptr; }
+	void SetQueryClass(std::shared_ptr<query_tools::CurrencyAPI> input_ptr) { currency_api_ptr = input_ptr; }
+	void SetQueryClass(std::nullptr_t input_ptr) { queries_ptr = nullptr; currency_api_ptr = nullptr; }
+	bool InitialiseConnections(std::function<void(std::string newmsg)> update_progress);
+	void GetClientSettings(languages::Language &interface_lng, wxString &selected_currency, wxString &origin_lng, wxString &origin_country);
 };
 
 #endif // __wxPriceQueryForOriginSettingDialog__

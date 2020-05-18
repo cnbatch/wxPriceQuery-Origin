@@ -29,6 +29,8 @@
 #include <wx/frame.h>
 #include <wx/choice.h>
 #include <wx/dialog.h>
+#include <wx/hyperlink.h>
+#include <wx/statline.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -56,6 +58,7 @@ class UIFrame : public wxFrame
 		wxStaticBoxSizer* sbSizerLanguages;
 		wxStaticText* m_staticText_languages;
 		wxButton* m_button_Settings;
+		wxButton* m_button_About;
 		wxTimer m_timer_loading;
 		wxTimer m_timer_search;
 
@@ -65,6 +68,7 @@ class UIFrame : public wxFrame
 		virtual void OnTreelistGameListSelectionChanged( wxTreeListEvent& event ) { event.Skip(); }
 		virtual void OnTreelistGamePriceSelectionChanged( wxTreeListEvent& event ) { event.Skip(); }
 		virtual void OnClickSettingButton( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnClickAboutButton( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTimerLoading( wxTimerEvent& event ) { event.Skip(); }
 		virtual void OnTimerSearch( wxTimerEvent& event ) { event.Skip(); }
 
@@ -120,19 +124,26 @@ class SettingDialog : public wxDialog
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Class LoadingDialog
+/// Class AboutDialog
 ///////////////////////////////////////////////////////////////////////////////
-class LoadingDialog : public wxDialog
+class AboutDialog : public wxDialog
 {
 	private:
 
 	protected:
-		wxStaticText* m_staticText;
+		wxPanel* m_panel_about;
+		wxStaticText* m_staticText_version;
+		wxStaticText* m_staticText_name;
+		wxHyperlinkCtrl* m_hyperlink_project;
+		wxStaticLine* m_staticline1;
+		wxStaticText* m_staticText_apis;
+		wxHyperlinkCtrl* m_hyperlink_api1;
+		wxHyperlinkCtrl* m_hyperlink_api2;
 
 	public:
 
-		LoadingDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxBORDER_NONE );
-		~LoadingDialog();
+		AboutDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("About"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxBORDER_NONE );
+		~AboutDialog();
 
 };
 

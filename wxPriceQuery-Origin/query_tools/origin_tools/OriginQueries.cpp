@@ -692,7 +692,7 @@ namespace query_tools
 		}
 	}
 
-	void OriginQueries::RetrieveTranslation(string three_letter_country_code, string origin_display_language_code)
+	void OriginQueries::RetrieveTranslation(const string &three_letter_country_code, const string &origin_display_language_code)
 	{
 		wxString translations_url = origin_data_api + origin_shell_translation;
 		translations_url.Replace("{num}", GenerateNumberInString(1, 4));
@@ -721,7 +721,7 @@ namespace query_tools
 
 		string three_letter_country_code = two_letter_country_map_to_three_letter_country[two_letter_country_code].ToStdString();
 		auto bind_func_translation = bind(&OriginQueries::RetrieveTranslation, this, placeholders::_1, placeholders::_2);
-		auto get_translation_thread = async(launch::async, bind_func_translation, three_letter_country_code, origin_display_language_code);
+		auto get_translation_thread = async(launch::async, bind_func_translation, reference_wrapper(three_letter_country_code), reference_wrapper(origin_display_language_code));
 
 		wxString wx_language_code_underline = to_underline_copy(origin_display_language_code);
 		wxString wx_supercat_lng_code = wx_language_code_underline;

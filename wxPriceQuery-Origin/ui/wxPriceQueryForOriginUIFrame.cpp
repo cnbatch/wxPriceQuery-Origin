@@ -11,6 +11,8 @@ wxPriceQueryForOriginUIFrame::wxPriceQueryForOriginUIFrame(wxWindow* parent)
 	wxLocale wl;
 	wl.Init();
 	current_language = languages::EnumMappingList()[wl.GetLanguage()];
+	about_dialog.SetWindowStyleFlag(about_dialog.GetWindowStyleFlag() | wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT);
+	setting_dialog.SetWindowStyleFlag(setting_dialog.GetWindowStyleFlag() | wxFRAME_FLOAT_ON_PARENT);
 	setting_dialog.SetIcon(this->GetIcon());
 	m_timer_loading.StartOnce(100);
 }
@@ -26,6 +28,7 @@ void wxPriceQueryForOriginUIFrame::OnIdle(wxIdleEvent& event)
 			return;
 		}
 
+		setting_dialog.SetWindowStyleFlag(setting_dialog.GetWindowStyleFlag() | wxFRAME_NO_TASKBAR);
 		setting_dialog.GetClientSettings(current_language, selected_currency, origin_lng, origin_two_letter_country);
 		origin_lng.MakeLower();
 		origin_lng[3] = toupper(origin_lng[3]);
@@ -74,7 +77,7 @@ void wxPriceQueryForOriginUIFrame::OnTreelistGameListSelectionChanged(wxTreeList
 {
 	m_staticText_languages->SetLabel("");
 	m_staticText_currency_order->SetLabel("");
-	
+
 	if (!m_searchCtrl_Left->GetValue().IsEmpty()) return;
 	m_treeListCtrl_ItemPrice->DeleteAllItems();
 
@@ -201,7 +204,7 @@ void wxPriceQueryForOriginUIFrame::OnTreelistGamePriceSelectionChanged(wxTreeLis
 	wxString all_supported_languages;
 	all_supported_languages = other_region_languages_list.empty() ? current_supported_languages :
 		languages::TranslateStaticText(current_language, "current_region") + "\n" + current_supported_languages + "\n\n" +
-		languages::TranslateStaticText(current_language, "other_region") +"\n" + other_region_languages;
+		languages::TranslateStaticText(current_language, "other_region") + "\n" + other_region_languages;
 	m_staticText_languages->SetLabel(all_supported_languages);
 
 	auto &current_offer_price = offer_path_with_prices[offer_path];
@@ -265,7 +268,7 @@ void wxPriceQueryForOriginUIFrame::OnClickSettingButton(wxCommandEvent& event)
 		current_language = new_language;
 		origin_lng = new_origin_lng;
 		origin_two_letter_country = new_origin_country;
-		
+
 		m_treeListCtrl_Left->DeleteAllItems();
 		m_treeListCtrl_Left->ClearColumns();
 		m_treeListCtrl_ItemPrice->DeleteAllItems();
@@ -275,6 +278,12 @@ void wxPriceQueryForOriginUIFrame::OnClickSettingButton(wxCommandEvent& event)
 		SetupLabelText();
 		run_idle_event_process = true;
 	}
+}
+
+void wxPriceQueryForOriginUIFrame::OnClickAboutButton(wxCommandEvent& event)
+{
+	about_dialog.SetLanguage(current_language);
+	about_dialog.ShowModal();
 }
 
 void wxPriceQueryForOriginUIFrame::OnTimerLoading(wxTimerEvent& event)
@@ -520,7 +529,7 @@ void wxPriceQueryForOriginUIFrame::SetupLabelText()
 	this->SetTitle(languages::TranslateStaticText(current_language, "app_title"));
 
 	m_searchCtrl_Left->SetLabel(languages::TranslateStaticText(current_language, "search"));
-	
+
 	m_treeListCtrl_Left->AppendColumn(languages::TranslateStaticText(current_language, "catalogue"), wxCOL_WIDTH_AUTOSIZE, wxALIGN_LEFT, wxCOL_RESIZABLE | wxCOL_SORTABLE);
 	m_treeListCtrl_Left->AppendColumn("entrytype", wxCOL_WIDTH_DEFAULT, wxALIGN_LEFT, wxCOL_HIDDEN);
 	m_treeListCtrl_Left->AppendColumn("internalname", wxCOL_WIDTH_DEFAULT, wxALIGN_LEFT, wxCOL_HIDDEN);
@@ -535,6 +544,7 @@ void wxPriceQueryForOriginUIFrame::SetupLabelText()
 	sbSizer_Prices->GetStaticBox()->SetLabel(languages::TranslateStaticText(current_language, "price_sorting"));
 	sbSizerLanguages->GetStaticBox()->SetLabel(languages::TranslateStaticText(current_language, "supported_languages"));
 	m_button_Settings->SetLabel(languages::TranslateStaticText(current_language, "settings"));
+	m_button_About->SetLabel(languages::TranslateStaticText(current_language, "about"));
 
 	if (auto currency_list = queries_ptr->GetCurrencyList(); currency_name_map_to_column.size() < currency_list.size())
 	{

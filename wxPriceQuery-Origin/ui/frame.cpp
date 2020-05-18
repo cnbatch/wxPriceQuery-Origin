@@ -90,6 +90,9 @@ UIFrame::UIFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_button_Settings = new wxButton( m_panel_Right, wxID_ANY, wxT("Settings..."), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer_Right->Add( m_button_Settings, 0, wxALL|wxEXPAND, 5 );
 
+	m_button_About = new wxButton( m_panel_Right, wxID_ANY, wxT("About"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer_Right->Add( m_button_About, 0, wxALL|wxEXPAND, 5 );
+
 
 	m_panel_Right->SetSizer( bSizer_Right );
 	m_panel_Right->Layout();
@@ -111,6 +114,7 @@ UIFrame::UIFrame( wxWindow* parent, wxWindowID id, const wxString& title, const 
 	m_treeListCtrl_Left->Connect( wxEVT_TREELIST_SELECTION_CHANGED, wxTreeListEventHandler( UIFrame::OnTreelistGameListSelectionChanged ), NULL, this );
 	m_treeListCtrl_ItemPrice->Connect( wxEVT_TREELIST_SELECTION_CHANGED, wxTreeListEventHandler( UIFrame::OnTreelistGamePriceSelectionChanged ), NULL, this );
 	m_button_Settings->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( UIFrame::OnClickSettingButton ), NULL, this );
+	m_button_About->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( UIFrame::OnClickAboutButton ), NULL, this );
 	this->Connect( ID_TIMER_LOADING, wxEVT_TIMER, wxTimerEventHandler( UIFrame::OnTimerLoading ) );
 	this->Connect( ID_TIMER_SEARCH, wxEVT_TIMER, wxTimerEventHandler( UIFrame::OnTimerSearch ) );
 }
@@ -123,6 +127,7 @@ UIFrame::~UIFrame()
 	m_treeListCtrl_Left->Disconnect( wxEVT_TREELIST_SELECTION_CHANGED, wxTreeListEventHandler( UIFrame::OnTreelistGameListSelectionChanged ), NULL, this );
 	m_treeListCtrl_ItemPrice->Disconnect( wxEVT_TREELIST_SELECTION_CHANGED, wxTreeListEventHandler( UIFrame::OnTreelistGamePriceSelectionChanged ), NULL, this );
 	m_button_Settings->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( UIFrame::OnClickSettingButton ), NULL, this );
+	m_button_About->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( UIFrame::OnClickAboutButton ), NULL, this );
 	this->Disconnect( ID_TIMER_LOADING, wxEVT_TIMER, wxTimerEventHandler( UIFrame::OnTimerLoading ) );
 	this->Disconnect( ID_TIMER_SEARCH, wxEVT_TIMER, wxTimerEventHandler( UIFrame::OnTimerSearch ) );
 
@@ -228,16 +233,46 @@ SettingDialog::~SettingDialog()
 
 }
 
-LoadingDialog::LoadingDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+AboutDialog::AboutDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
 	wxBoxSizer* bSizer;
 	bSizer = new wxBoxSizer( wxVERTICAL );
 
-	m_staticText = new wxStaticText( this, wxID_ANY, wxT("Label"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL );
-	m_staticText->Wrap( -1 );
-	bSizer->Add( m_staticText, 1, wxALL|wxEXPAND, 5 );
+	m_panel_about = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer_About;
+	bSizer_About = new wxBoxSizer( wxVERTICAL );
+
+	m_staticText_version = new wxStaticText( m_panel_about, wxID_ANY, wxT("version"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_version->Wrap( -1 );
+	bSizer_About->Add( m_staticText_version, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+	m_staticText_name = new wxStaticText( m_panel_about, wxID_ANY, wxT("Project Codes on GitHub"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL );
+	m_staticText_name->Wrap( -1 );
+	bSizer_About->Add( m_staticText_name, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+	m_hyperlink_project = new wxHyperlinkCtrl( m_panel_about, wxID_ANY, wxT("wxFB Website"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+	bSizer_About->Add( m_hyperlink_project, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+	m_staticline1 = new wxStaticLine( m_panel_about, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer_About->Add( m_staticline1, 0, wxEXPAND | wxALL, 5 );
+
+	m_staticText_apis = new wxStaticText( m_panel_about, wxID_ANY, wxT("APIs of Exchange Rates"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText_apis->Wrap( -1 );
+	bSizer_About->Add( m_staticText_apis, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+	m_hyperlink_api1 = new wxHyperlinkCtrl( m_panel_about, wxID_ANY, wxT("wxFB Website"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+	bSizer_About->Add( m_hyperlink_api1, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+	m_hyperlink_api2 = new wxHyperlinkCtrl( m_panel_about, wxID_ANY, wxT("wxFB Website"), wxT("http://www.wxformbuilder.org"), wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+	bSizer_About->Add( m_hyperlink_api2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+
+	m_panel_about->SetSizer( bSizer_About );
+	m_panel_about->Layout();
+	bSizer_About->Fit( m_panel_about );
+	bSizer->Add( m_panel_about, 1, wxEXPAND | wxALL, 5 );
 
 
 	this->SetSizer( bSizer );
@@ -247,6 +282,6 @@ LoadingDialog::LoadingDialog( wxWindow* parent, wxWindowID id, const wxString& t
 	this->Centre( wxBOTH );
 }
 
-LoadingDialog::~LoadingDialog()
+AboutDialog::~AboutDialog()
 {
 }

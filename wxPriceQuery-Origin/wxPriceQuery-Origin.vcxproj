@@ -156,7 +156,7 @@
     <ClCompile Include="query_tools\origin_tools\OriginQueries.cpp" />
     <ClCompile Include="string_utilities.cpp" />
     <ClCompile Include="ui\frame.cpp" />
-    <ClCompile Include="ui\wxPriceQueryForOriginLoadingDialog.cpp" />
+    <ClCompile Include="ui\wxPriceQueryForOriginAboutDialog.cpp" />
     <ClCompile Include="ui\wxPriceQueryForOriginSettingDialog.cpp" />
     <ClCompile Include="ui\wxPriceQueryForOriginUIFrame.cpp" />
   </ItemGroup>
@@ -170,7 +170,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="string_utilities.hpp" />
     <ClInclude Include="ui\frame.h" />
-    <ClInclude Include="ui\wxPriceQueryForOriginLoadingDialog.h" />
+    <ClInclude Include="ui\wxPriceQueryForOriginAboutDialog.h" />
     <ClInclude Include="ui\wxPriceQueryForOriginSettingDialog.h" />
     <ClInclude Include="ui\wxPriceQueryForOriginUIFrame.h" />
     <ClInclude Include="languages\zh.hpp" />

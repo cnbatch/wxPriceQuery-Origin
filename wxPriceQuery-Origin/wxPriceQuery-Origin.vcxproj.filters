@@ -66,9 +66,6 @@
     <ClCompile Include="ui\wxPriceQueryForOriginUIFrame.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
-    <ClCompile Include="ui\wxPriceQueryForOriginLoadingDialog.cpp">
-      <Filter>Source Files\ui</Filter>
-    </ClCompile>
     <ClCompile Include="query_tools\origin_tools\OriginQueries.cpp">
       <Filter>Source Files\query_tools\origin_tools</Filter>
     </ClCompile>
@@ -84,6 +81,9 @@
     <ClCompile Include="query_tools\exchange_rate\CurrencyAPI.cpp">
       <Filter>Source Files\query_tools\exchange_rate</Filter>
     </ClCompile>
+    <ClCompile Include="ui\wxPriceQueryForOriginAboutDialog.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\frame.h">
@@ -97,9 +97,6 @@
     </ClInclude>
     <ClInclude Include="app.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\wxPriceQueryForOriginLoadingDialog.h">
-      <Filter>Header Files\ui</Filter>
     </ClInclude>
     <ClInclude Include="query_tools\origin_tools\OriginQueries.hpp">
       <Filter>Header Files\query_tools\origin_tools</Filter>
@@ -124,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\wxPriceQueryForOriginAboutDialog.h">
+      <Filter>Header Files\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
