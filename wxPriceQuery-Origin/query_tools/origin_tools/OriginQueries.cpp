@@ -9,7 +9,11 @@
 #include <memory>
 #include <wx/msgdlg.h>
 #include <nlohmann/json.hpp>
+#ifdef __WXMSW__
 #include <rapidxml/rapidxml.hpp>
+#else
+#include <rapidxml.h>
+#endif
 #include "../../string_utilities.hpp"
 
 namespace query_tools
