@@ -10,8 +10,8 @@
     <File Name="ui/wxPriceQueryForOriginUIFrame.cpp"/>
     <File Name="ui/wxPriceQueryForOriginSettingDialog.h"/>
     <File Name="ui/wxPriceQueryForOriginSettingDialog.cpp"/>
-    <File Name="ui/wxPriceQueryForOriginLoadingDialog.h"/>
-    <File Name="ui/wxPriceQueryForOriginLoadingDialog.cpp"/>
+    <File Name="ui/wxPriceQueryForOriginAboutDialog.h"/>
+    <File Name="ui/wxPriceQueryForOriginAboutDialog.cpp"/>
     <File Name="ui/ui.fbp"/>
     <File Name="ui/icon.xpm"/>
     <File Name="ui/frame.h"/>
