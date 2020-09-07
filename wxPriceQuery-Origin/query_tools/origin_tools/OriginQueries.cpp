@@ -32,12 +32,15 @@ namespace query_tools
 
 	string OriginQueries::GetFileContentFromURL(const string &url, long timeout)
 	{
-		auto deleter = [](CURL *handle) { if (handle) curl_easy_cleanup(handle); };
-		unique_ptr<CURL, decltype(deleter)> curl_handle(curl_easy_init(), deleter);
 		vector<char> received_data;
-		curl_slist *chunk = nullptr;
-		chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
-		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTPHEADER, chunk);
+		auto handle_deleter = [](CURL *handle) { if (handle) curl_easy_cleanup(handle); };
+		unique_ptr<CURL, decltype(handle_deleter)> curl_handle(curl_easy_init(), handle_deleter);
+		auto slist_deleter = [](curl_slist *chunk) {if (chunk) curl_slist_free_all(chunk); };
+		unique_ptr<curl_slist, decltype(slist_deleter)> chunk(curl_slist_append(nullptr, "Accept: application/json, text/plain, */*"), slist_deleter);
+		//curl_slist *chunk = nullptr;
+		//chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
+
+		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTPHEADER, chunk.get());
 		curl_easy_setopt(curl_handle.get(), CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
 		curl_easy_setopt(curl_handle.get(), CURLOPT_CONNECTTIMEOUT, timeout);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_FOLLOWLOCATION, 1L);
@@ -53,7 +56,7 @@ namespace query_tools
 			received_data.clear();
 			if (CURLcode curl_result_code = curl_easy_perform(curl_handle.get()); curl_result_code == CURLE_OK)
 			{
-				curl_slist_free_all(chunk);
+				//curl_slist_free_all(chunk);
 				return string(received_data.begin(), received_data.end());
 			}
 			else if (curl_result_code == CURLE_OPERATION_TIMEDOUT)
@@ -62,23 +65,26 @@ namespace query_tools
 			}
 			else
 			{
-				curl_slist_free_all(chunk);
+				//curl_slist_free_all(chunk);
 				return string();
 			}
 		}
-		curl_slist_free_all(chunk);
+		//curl_slist_free_all(chunk);
 		return string();
 	}
 
 	vector<string> OriginQueries::GetFileContentFromURLs(const vector<string> &urls, long timeout)
 	{
 		vector<string> results;
+		vector<char> received_data;
 		auto deleter = [](CURL *handle) { if (handle) curl_easy_cleanup(handle); };
 		unique_ptr<CURL, decltype(deleter)> curl_handle(curl_easy_init(), deleter);
-		vector<char> received_data;
-		curl_slist *chunk = nullptr;
-		chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
-		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTPHEADER, chunk);
+		auto slist_deleter = [](curl_slist *chunk) { if (chunk) curl_slist_free_all(chunk); };
+		unique_ptr<curl_slist, decltype(slist_deleter)> chunk(curl_slist_append(nullptr, "Accept: application/json, text/plain, */*"), slist_deleter);
+		//curl_slist *chunk = nullptr;
+		//chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
+
+		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTPHEADER, chunk.get());
 		curl_easy_setopt(curl_handle.get(), CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
 		curl_easy_setopt(curl_handle.get(), CURLOPT_CONNECTTIMEOUT, timeout);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_FOLLOWLOCATION, 1L);
@@ -109,7 +115,7 @@ namespace query_tools
 				}
 			}
 		}
-		curl_slist_free_all(chunk);
+		//curl_slist_free_all(chunk);
 		return results;
 	}
 

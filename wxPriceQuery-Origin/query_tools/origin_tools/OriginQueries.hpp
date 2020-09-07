@@ -84,6 +84,8 @@ namespace query_tools
 	public:
 		OriginQueries();
 		~OriginQueries();
+		OriginQueries & operator=(const OriginQueries&) = delete;
+		OriginQueries(const OriginQueries&) = delete;
 
 		std::tuple<bool, std::string> ConnectOriginServer();
 		std::map<wxString, wxString> GetDisplayLanguageList(std::function<void(std::string newmsg)> update_progress);
