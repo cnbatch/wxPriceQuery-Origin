@@ -262,7 +262,7 @@ namespace query_tools
 		auto currency_start = file_content.find("{currency:\"");
 		auto start = file_content.rfind("=", currency_start);
 		string to_be_match = file_content.substr(start);
-		string json_string = GetJsonString(R"(\=\{.*\:(?:\{currency.*?\:.*?\}.*?).*?\})", to_be_match);
+		string json_string = GetJsonString(R"(=\{..:(?:\{currency.*?:.*?,.*?ratingsystem.*?\}.*?).*?\}\})", to_be_match);
 		if (!json_string.empty())
 		{
 			replace_string(json_string, "{", "{\"");
