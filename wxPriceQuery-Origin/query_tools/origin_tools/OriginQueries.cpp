@@ -470,7 +470,7 @@ namespace query_tools
 	{
 		for (auto &[two_letter_country_code, game_info] : two_letter_country_map_to_game_info)
 		{
-			if (string file_content = game_info; !file_content.empty())
+			if (const string &file_content = game_info; !file_content.empty())
 			{
 				json json_file;
 				try
@@ -479,9 +479,12 @@ namespace query_tools
 				}
 				catch (...)
 				{
-					wxMessageBox(__FUNCTION__);
+					if (file_content.find(R"(xml version="1.0")") != string::npos && file_content.find("AccessDenied") != string::npos)
+					{}
+					else wxMessageBox(__FUNCTION__);
 					continue;
 				}
+
 				if (json &offer_array = json_file["offers"]; offer_array.is_array())
 				{
 					string bioware_virtual_currency_offer_id;
