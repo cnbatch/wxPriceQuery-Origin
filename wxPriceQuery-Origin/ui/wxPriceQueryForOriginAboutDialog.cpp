@@ -21,7 +21,7 @@ void wxPriceQueryForOriginAboutDialog::SetLanguage(languages::Language lng)
 	current_language = lng;
 
 	this->SetTitle(languages::TranslateStaticText(current_language, "about"));
-	m_staticText_version->SetLabelText(languages::TranslateStaticText(current_language, "app_title") + " (v0.11)");
+	m_staticText_version->SetLabelText(languages::TranslateStaticText(current_language, "app_title") + " (v0.12)");
 	m_staticText_name->SetLabelText(languages::TranslateStaticText(current_language, "this_project"));
 	m_staticText_apis->SetLabelText(languages::TranslateStaticText(current_language, "api_exchange_rate"));
 
