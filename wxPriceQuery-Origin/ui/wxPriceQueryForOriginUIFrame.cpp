@@ -196,16 +196,15 @@ void wxPriceQueryForOriginUIFrame::OnTreelistGamePriceSelectionChanged(wxTreeLis
 	wxString current_supported_languages, other_region_languages;
 	for (auto &language_name : supported_languages_list)
 		if (!language_name.empty())
-			current_supported_languages = current_supported_languages.IsEmpty() ? wxString(language_name) : current_supported_languages + "\n" + language_name;
+			current_supported_languages = current_supported_languages.IsEmpty() ? wxString(language_name) : current_supported_languages + ", " + language_name;
 	for (auto &language_name : other_region_languages_list)
 		if (!language_name.empty())
-			other_region_languages = other_region_languages.IsEmpty() ? wxString(language_name) : other_region_languages + "\n" + language_name;
+			other_region_languages = other_region_languages.IsEmpty() ? wxString(language_name) : other_region_languages + ", " + language_name;
 
 	wxString all_supported_languages;
 	all_supported_languages = other_region_languages_list.empty() ? current_supported_languages :
 		languages::TranslateStaticText(current_language, "current_region") + "\n" + current_supported_languages + "\n\n" +
 		languages::TranslateStaticText(current_language, "other_region") + "\n" + other_region_languages;
-	m_staticText_languages->SetLabel(all_supported_languages);
 
 	auto &current_offer_price = offer_path_with_prices[offer_path];
 	std::multimap<double, std::string> convert_number_map_to_original_currency;
@@ -221,7 +220,7 @@ void wxPriceQueryForOriginUIFrame::OnTreelistGamePriceSelectionChanged(wxTreeLis
 		{
 			wxString failed_message = languages::TranslateCurrencyName(current_language, currency)
 				+ " " + languages::TranslateStaticText(current_language, "conversion_failed");
-			error_message = "\n\n" + (error_message.IsEmpty() ? failed_message : error_message + "\n" + failed_message);
+			error_message = error_message.IsEmpty() ? "\n" + failed_message : error_message + "\n" + failed_message;
 		}
 	}
 
@@ -237,6 +236,9 @@ void wxPriceQueryForOriginUIFrame::OnTreelistGamePriceSelectionChanged(wxTreeLis
 	}
 
 	m_staticText_currency_order->SetLabel(currency_order + error_message);
+	int current_width = m_staticText_currency_order->GetClientSize().GetWidth();
+	m_staticText_languages->SetLabel(all_supported_languages);
+	m_staticText_languages->Wrap(current_width);
 	Layout();
 }
 

@@ -11,7 +11,8 @@ namespace query_tools
 		std::map<std::string, double> exchange_rates;
 		std::string base_currency;
 		void UpdateExchangeRate();
-		void UpdateExchangeRateTWD();
+		void UpdateExchangeRateOthers();
+		std::vector<std::string> other_currency_names = { "TWD", "ARS", "CLP", "COP", "EGP", "VND" };
 
 	public:
 		CurrencyAPI();

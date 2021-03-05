@@ -19,7 +19,7 @@ namespace query_tools
 	CurrencyAPI::CurrencyAPI()
 	{
 		UpdateExchangeRate();
-		UpdateExchangeRateTWD();
+		UpdateExchangeRateOthers();
 	}
 
 	vector<string> CurrencyAPI::GetAvailableCurrency()
@@ -28,7 +28,7 @@ namespace query_tools
 		if (exchange_rates.empty())
 		{
 			UpdateExchangeRate();
-			UpdateExchangeRateTWD();
+			UpdateExchangeRateOthers();
 		}
 
 		transform(begin(exchange_rates), end(exchange_rates), back_inserter(currency_list), [](auto const &each_pair) { return each_pair.first; });
@@ -77,15 +77,22 @@ namespace query_tools
 		exchange_rates[base_currency] = 1;
 	}
 
-	void CurrencyAPI::UpdateExchangeRateTWD()
+	void CurrencyAPI::UpdateExchangeRateOthers()
 	{
+		std::vector<std::string> url_pairs = other_currency_names;
+		std::for_each(url_pairs.begin(), url_pairs.end(), [](auto &str) { str.insert(0, "USD"); });
+		std::string url_part;
+		for (const auto &str : url_pairs)
+			url_part = url_part + "," + str;
+		std::string url = "https://www.freeforexapi.com/api/live?pairs=USDEUR" + url_part;
+
 		auto deleter = [](CURL *handle) { if (handle) curl_easy_cleanup(handle); };
 		unique_ptr<CURL, decltype(deleter)> curl_handle(curl_easy_init(), deleter);
 		vector<char> received_data;
 		curl_easy_setopt(curl_handle.get(), CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEDATA, &received_data);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_URL, "https://www.freeforexapi.com/api/live?pairs=USDEUR,USDTWD");
+		curl_easy_setopt(curl_handle.get(), CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEFUNCTION,
 			static_cast<CURL_CALLBACK_FUNCTION_PTR>([](char *ptr, size_t size, size_t nmemb, void *userdata) -> size_t
 				{
@@ -103,7 +110,8 @@ namespace query_tools
 		json currency_json = json::parse(currency_json_string);
 		if (currency_json.find("message") == currency_json.end())
 		{
-			exchange_rates["TWD"] = currency_json["rates"]["USDTWD"]["rate"].get<double>() / currency_json["rates"]["USDEUR"]["rate"].get<double>();
+			for (const auto &currency_name : other_currency_names)
+			exchange_rates[currency_name] = currency_json["rates"]["USD" + currency_name]["rate"].get<double>() / currency_json["rates"]["USDEUR"]["rate"].get<double>();
 		}
 	}
 }
