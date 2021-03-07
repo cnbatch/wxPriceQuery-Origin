@@ -56,7 +56,7 @@ private:
 
 	void WriteCatalogueToTreeList(const std::string &language_code);
 	void WriteDetailDataToTreeList(const std::string &two_letter_country_code, const std::string &language_code,
-		const std::map<std::string, std::shared_ptr<query_tools::GameDetailData>> &offer_id_map_to_detail_info,
+		std::map<std::string, std::shared_ptr<query_tools::GameDetailData>> offer_id_map_to_detail_info,
 		const std::unordered_set<std::string> &offer_ids, std::string filter_text = std::string());
 	void SetupLabelText();
 

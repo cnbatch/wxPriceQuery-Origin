@@ -425,7 +425,7 @@ void wxPriceQueryForOriginUIFrame::WriteCatalogueToTreeList(const std::string &l
 	m_treeListCtrl_Left->Expand(item_level_top);
 }
 
-void wxPriceQueryForOriginUIFrame::WriteDetailDataToTreeList(const std::string &two_letter_country_code, const std::string &language_code, const std::map<std::string, std::shared_ptr<query_tools::GameDetailData>> &offer_id_map_to_detail_info, const std::unordered_set<std::string> &offer_ids, std::string filter_text)
+void wxPriceQueryForOriginUIFrame::WriteDetailDataToTreeList(const std::string &two_letter_country_code, const std::string &language_code, std::map<std::string, std::shared_ptr<query_tools::GameDetailData>> offer_id_map_to_detail_info, const std::unordered_set<std::string> &offer_ids, std::string filter_text)
 {
 	std::string offer_id;
 	std::map<wxString, double> other_currency_price;

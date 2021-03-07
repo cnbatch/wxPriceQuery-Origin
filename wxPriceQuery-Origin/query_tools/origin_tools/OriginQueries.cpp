@@ -46,7 +46,7 @@ namespace query_tools
 		curl_easy_setopt(curl_handle.get(), CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; rv:11.0) like Gecko");
+		curl_easy_setopt(curl_handle.get(), CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0");
 		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEFUNCTION, WriteCallback);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEDATA, &received_data);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_URL, url.c_str());
@@ -90,7 +90,7 @@ namespace query_tools
 		curl_easy_setopt(curl_handle.get(), CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; rv:11.0) like Gecko");
+		curl_easy_setopt(curl_handle.get(), CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0");
 		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEFUNCTION, WriteCallback);
 		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEDATA, &received_data);
 		for (auto &url : urls)
@@ -101,7 +101,7 @@ namespace query_tools
 				received_data.clear();
 				if (CURLcode curl_result_code = curl_easy_perform(curl_handle.get()); curl_result_code == CURLE_OK)
 				{
-					results.push_back(string(received_data.begin(), received_data.end()));
+					results.emplace_back(string(received_data.begin(), received_data.end()));
 					break;
 				}
 				else if (curl_result_code == CURLE_OPERATION_TIMEDOUT)
@@ -110,7 +110,7 @@ namespace query_tools
 				}
 				else
 				{
-					results.push_back(string());
+					results.emplace_back(string());
 					break;
 				}
 			}
@@ -119,7 +119,7 @@ namespace query_tools
 		return results;
 	}
 
-	string OriginQueries::ISO8601ToLocalTime(const string & date_string)
+	string OriginQueries::ISO8601ToLocalTime(const string &date_string)
 	{
 		tm time_struct;
 		istringstream time_sstream(date_string);
