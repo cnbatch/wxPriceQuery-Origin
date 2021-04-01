@@ -53,7 +53,7 @@ Please open ‘*.workspace’ file with CodeLite and complie the project after a
 
 ## APIs of Exchange rates
 Two APIs are used in this project:
-* Foreign exchange rates API with currency conversion (Github: [exchangeratesapi](https://github.com/exchangeratesapi/exchangeratesapi); Home Page: [exchangeratesapi.io](https://www.exchangeratesapi.io/))
+* European Celtral Bank: [Euro foreign exchange reference rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)
 * [Free Forex API](https://www.freeforexapi.com/)
 
 ---
@@ -108,7 +108,7 @@ Windows 用户强烈建议使用 vcpkg 安装依赖项
 
 ## 使用到的汇率 API
 目前使用以下两个汇率 API:
-* Foreign exchange rates API with currency conversion (Github: [exchangeratesapi](https://github.com/exchangeratesapi/exchangeratesapi); Home Page: [exchangeratesapi.io](https://www.exchangeratesapi.io/))
+* European Celtral Bank: [Euro foreign exchange reference rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)
 * [Free Forex API](https://www.freeforexapi.com/)
 
 ---
@@ -163,5 +163,5 @@ Windows 用戶強烈建議使用 vcpkg 安裝依賴項
 
 ## 使用到的滙率 API
 目前使用以下兩個滙率 API:
-* Foreign exchange rates API with currency conversion (Github: [exchangeratesapi](https://github.com/exchangeratesapi/exchangeratesapi); Home Page: [exchangeratesapi.io](https://www.exchangeratesapi.io/))
+* European Celtral Bank: [Euro foreign exchange reference rates](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)
 * [Free Forex API](https://www.freeforexapi.com/)
