@@ -1,13 +1,12 @@
 #include "OriginQueries.hpp"
-#include <curl/curl.h>
+#include <wx/webrequest.h>
+#include <wx/msgdlg.h>
 #include <vector>
 #include <sstream>
 #include <iomanip>
 #include <random>
 #include <regex>
 #include <future>
-#include <memory>
-#include <wx/msgdlg.h>
 #include <nlohmann/json.hpp>
 #ifdef __WXMSW__
 #include <rapidxml/rapidxml.hpp>
@@ -23,99 +22,59 @@ namespace query_tools
 	using namespace string_utitlies;
 	using namespace rapidxml;
 
-	size_t WriteCallback(char *ptr, size_t size, size_t nmemb, void *userdata)
+	wxString OriginQueries::GetFileContentFromURL(wxString url, int retry)
 	{
-		vector<char> &received_data = *reinterpret_cast<vector<char> *>(userdata);
-		received_data.insert(received_data.end(), ptr, ptr + nmemb);
-		return size * nmemb;
-	}
+		wxString trim_url = url;
+		trim_url.Trim();
 
-	string OriginQueries::GetFileContentFromURL(const string &url, long timeout)
-	{
-		vector<char> received_data;
-		auto handle_deleter = [](CURL *handle) { if (handle) curl_easy_cleanup(handle); };
-		unique_ptr<CURL, decltype(handle_deleter)> curl_handle(curl_easy_init(), handle_deleter);
-		auto slist_deleter = [](curl_slist *chunk) {if (chunk) curl_slist_free_all(chunk); };
-		unique_ptr<curl_slist, decltype(slist_deleter)> chunk(curl_slist_append(nullptr, "Accept: application/json, text/plain, */*"), slist_deleter);
-		//curl_slist *chunk = nullptr;
-		//chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
+		wxString file_content;
+		wxWebRequest web_request;
+		wxWebSession web_session = wxWebSession::New();
+		if (web_session.IsOpened())
+			web_request = web_session.CreateRequest(window_handler, trim_url);
+		else
+			web_request = wxWebSession::GetDefault().CreateRequest(window_handler, trim_url);
 
-		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTPHEADER, chunk.get());
-		curl_easy_setopt(curl_handle.get(), CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
-		curl_easy_setopt(curl_handle.get(), CURLOPT_CONNECTTIMEOUT, timeout);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_FOLLOWLOCATION, 1L);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_SSL_VERIFYPEER, 0L);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0");
-		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEFUNCTION, WriteCallback);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEDATA, &received_data);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_URL, url.c_str());
+		if (!web_request.IsOk())
+			return file_content;
 
-		for (int i = 0; i < 5; ++i)
+		web_request.SetHeader("User-Agent", user_agent);
+
+		if (cancel_web_request)
+			return file_content;
+
+		running_sessions++;
+
+		web_request.Start();
+		while (web_request.GetState() == wxWebRequest::State_Active)
 		{
-			received_data.clear();
-			if (CURLcode curl_result_code = curl_easy_perform(curl_handle.get()); curl_result_code == CURLE_OK)
+			if (cancel_web_request)
 			{
-				//curl_slist_free_all(chunk);
-				return string(received_data.begin(), received_data.end());
+				web_request.Cancel();
+				running_sessions--;
+				return file_content;
 			}
-			else if (curl_result_code == CURLE_OPERATION_TIMEDOUT)
-			{
-				continue;
-			}
-			else
-			{
-				//curl_slist_free_all(chunk);
-				return string();
-			}
+			this_thread::sleep_for(100ms);
 		}
-		//curl_slist_free_all(chunk);
-		return string();
+
+		running_sessions--;
+
+		if (file_content = web_request.GetResponse().AsString(); file_content.IsEmpty())
+		{
+			if (0 != retry)
+				file_content = GetFileContentFromURL(url, retry - 1);
+		}
+
+		return file_content;
 	}
 
-	vector<string> OriginQueries::GetFileContentFromURLs(const vector<string> &urls, long timeout)
+	vector<wxString> OriginQueries::GetFileContentFromURLs(const vector<wxString> &urls, int retry)
 	{
-		vector<string> results;
-		vector<char> received_data;
-		auto deleter = [](CURL *handle) { if (handle) curl_easy_cleanup(handle); };
-		unique_ptr<CURL, decltype(deleter)> curl_handle(curl_easy_init(), deleter);
-		auto slist_deleter = [](curl_slist *chunk) { if (chunk) curl_slist_free_all(chunk); };
-		unique_ptr<curl_slist, decltype(slist_deleter)> chunk(curl_slist_append(nullptr, "Accept: application/json, text/plain, */*"), slist_deleter);
-		//curl_slist *chunk = nullptr;
-		//chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
+		vector<wxString> results;
 
-		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTPHEADER, chunk.get());
-		curl_easy_setopt(curl_handle.get(), CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
-		curl_easy_setopt(curl_handle.get(), CURLOPT_CONNECTTIMEOUT, timeout);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_FOLLOWLOCATION, 1L);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_SSL_VERIFYPEER, 0L);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0");
-		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEFUNCTION, WriteCallback);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEDATA, &received_data);
 		for (auto &url : urls)
-		{
-			curl_easy_setopt(curl_handle.get(), CURLOPT_URL, url.c_str());
-			for (int i = 0; i < 5; ++i)
-			{
-				received_data.clear();
-				if (CURLcode curl_result_code = curl_easy_perform(curl_handle.get()); curl_result_code == CURLE_OK)
-				{
-					results.emplace_back(string(received_data.begin(), received_data.end()));
-					break;
-				}
-				else if (curl_result_code == CURLE_OPERATION_TIMEDOUT)
-				{
-					continue;
-				}
-				else
-				{
-					results.emplace_back(string());
-					break;
-				}
-			}
-		}
-		//curl_slist_free_all(chunk);
+			results.emplace_back(GetFileContentFromURL(url, retry));
+
 		return results;
 	}
 
@@ -157,54 +116,57 @@ namespace query_tools
 		else return string();
 	}
 
-	OriginQueries::OriginQueries()
+	OriginQueries::OriginQueries() : cancel_web_request(false), window_handler(nullptr)
 	{
-		time_t local_raw_time = time(nullptr);
-		tm temp_tm = *gmtime(&local_raw_time);
-		temp_tm.tm_isdst = -1;
-		time_t gmt_time = mktime(&temp_tm);
-		time_zone_hours = difftime(local_raw_time, gmt_time) / 60 / 60;
+		InitialTimeSettings();
 	}
 
 	OriginQueries::~OriginQueries()
 	{
 	}
 
+	OriginQueries::OriginQueries(wxEvtHandler *current_window_handler)
+		: cancel_web_request(false), window_handler(current_window_handler)
+	{
+		InitialTimeSettings();
+	}
+
+	void OriginQueries::SetWindowHandler(wxEvtHandler *current_window_handler)
+	{
+		window_handler = current_window_handler;
+	}
+
+	void OriginQueries::CancelWebRequest()
+	{
+		cancel_web_request = true;
+		while (running_sessions != 0)
+			this_thread::sleep_for(500ms);
+		cancel_web_request = false;
+	}
+
 	tuple<bool, string> OriginQueries::ConnectOriginServer()
 	{
-		auto deleter = [](CURL *handle) { if (handle) curl_easy_cleanup(handle); };
-		unique_ptr<CURL, decltype(deleter)> curl_handle(curl_easy_init(), deleter);
-		if (!curl_handle)
+		wxWebSession web_session = wxWebSession::New();
+		wxWebRequest web_request;
+		if (web_session.IsOpened())
+			web_request = web_session.CreateRequest(window_handler, origin_url);
+		else
+			web_request = wxWebSession::GetDefault().CreateRequest(window_handler, origin_url);
+
+		web_request.SetHeader("User-Agent", user_agent);
+
+		if (!web_request.IsOk())
 			return { false, string() };
 
-		vector<char> received_data;
-		curl_slist *chunk = nullptr;
-		chunk = curl_slist_append(chunk, "Accept: application/json, text/plain, */*");
-		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTPHEADER, chunk);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br");
-		curl_easy_setopt(curl_handle.get(), CURLOPT_URL, origin_url.c_str());
-		curl_easy_setopt(curl_handle.get(), CURLOPT_SSL_VERIFYPEER, 0L);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_FOLLOWLOCATION, 1L);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEFUNCTION, WriteCallback);
-		curl_easy_setopt(curl_handle.get(), CURLOPT_WRITEDATA, &received_data);
-
-		if (CURLcode curl_result_code = curl_easy_perform(curl_handle.get()); curl_result_code != CURLE_OK)
+		web_request.Start();
+		while (web_request.GetState() == wxWebRequest::State_Active)
 		{
-			curl_easy_reset(curl_handle.get());
-			curl_slist_free_all(chunk);
-			return { false, curl_easy_strerror(curl_result_code) };
+			this_thread::sleep_for(100ms);
 		}
 
-		origin_index_html = string(received_data.begin(), received_data.end());
+		origin_index_html = web_request.GetResponse().AsString().ToStdString();
+		origin_index_url = web_request.GetResponse().GetURL().ToStdString();
 
-		char *redirected_to_url = nullptr;
-		curl_easy_getinfo(curl_handle.get(), CURLINFO_EFFECTIVE_URL, &redirected_to_url);
-		if (redirected_to_url)
-			origin_index_url = redirected_to_url;
-
-		curl_easy_reset(curl_handle.get());
-		curl_slist_free_all(chunk);
 		return { true, string() };
 	}
 
@@ -214,7 +176,7 @@ namespace query_tools
 			return;
 
 		vector<future<void>> set_value_handles;
-		vector<future<string>> get_value_handles;
+		vector<future<wxString>> get_value_handles;
 
 		set_value_handles.emplace_back(async(launch::async, bind(&OriginQueries::RetrieveDisplayLanguageList, this)));
 		set_value_handles.emplace_back(async(launch::async, bind(&OriginQueries::RetrieveCurrencySymbolList, this)));
@@ -233,13 +195,13 @@ namespace query_tools
 				partial_url.erase(0, 1);
 			}
 			wxString js_file_path = origin_url + partial_url;
-			get_value_handles.emplace_back(async(launch::async, bind(&OriginQueries::GetFileContentFromURL, this, placeholders::_1, placeholders::_2), js_file_path.ToStdString(), 20));
+			get_value_handles.emplace_back(async(launch::async, bind(&OriginQueries::GetFileContentFromURL, this, placeholders::_1, placeholders::_2), js_file_path, 3));
 		}
 
-		string file_content;
+		wxString file_content;
 		for (auto &handle : get_value_handles)
 		{
-			update_progress("");
+			//update_progress("");
 			file_content += handle.get();
 		}
 
@@ -252,17 +214,17 @@ namespace query_tools
 
 		for (auto &handle : set_value_handles)
 		{
-			update_progress("");
+			//update_progress("");
 			handle.wait();
 		}
 	}
 
-	void OriginQueries::RetrieveCurrencyNameList(const string &file_content)
+	void OriginQueries::RetrieveCurrencyNameList(const wxString &file_content)
 	{
 		auto currency_start = file_content.find("{currency:\"");
 		auto start = file_content.rfind("=", currency_start);
-		string to_be_match = file_content.substr(start);
-		string json_string = GetJsonString(R"(=\{..:(?:\{currency.*?:.*?,.*?ratingsystem.*?\}.*?).*?\}\})", to_be_match);
+		auto to_be_match = file_content.substr(start);
+		string json_string = GetJsonString(R"(=\{..:(?:\{currency.*?:.*?,.*?ratingsystem.*?\}.*?).*?\}\})", to_be_match.utf8_string());
 		if (!json_string.empty())
 		{
 			replace_string(json_string, "{", "{\"");
@@ -297,7 +259,7 @@ namespace query_tools
 			wxString json_file_path = origin_data_api + origin_index_html.substr(start_pos, end_pos - start_pos);
 			json_file_path.Replace("{num}", GenerateNumberInString(1, 4));
 
-			string file_content = GetFileContentFromURL(json_file_path.ToStdString());
+			wxString file_content = GetFileContentFromURL(json_file_path);
 			if (file_content.empty())
 			{
 				return;
@@ -305,7 +267,7 @@ namespace query_tools
 
 			try
 			{
-				json currency_json = json::parse(file_content);
+				json currency_json = json::parse(file_content.utf8_string());
 				for (auto &[key, value] : currency_json["country"].items())
 				{
 					string country_code = key;
@@ -320,22 +282,25 @@ namespace query_tools
 		}
 	}
 
-	void OriginQueries::RetrieveGameSupportedLanguageMapping(const string &file_content)
+	void OriginQueries::RetrieveGameSupportedLanguageMapping(const wxString &file_content)
 	{
 		auto position = file_content.find("en_WW");
 		if (position == string::npos) return;
 		auto start = file_content.rfind("{", position);
 		auto end = file_content.find("}", position);
-		string json_string = file_content.substr(start, end - start + 1);
-		if (!json_string.empty())
+		auto json_string = file_content.substr(start, end - start + 1);
+		if (!json_string.IsEmpty())
 		{
-			replace_string(json_string, "{", "{\"");
-			replace_string(json_string, ",", ",\"");
-			replace_string(json_string, ":", "\":");
+			//replace_string(json_string, "{", "{\"");
+			//replace_string(json_string, ",", ",\"");
+			//replace_string(json_string, ":", "\":");
+			json_string.Replace("{", "{\"");
+			json_string.Replace(",", ",\"");
+			json_string.Replace(":", "\":");
 
 			try
 			{
-				json country_letter_json = json::parse(json_string);
+				json country_letter_json = json::parse(json_string.utf8_string());
 				for (auto &[key, value] : country_letter_json.items())
 				{
 					string key_str = key;
@@ -356,9 +321,9 @@ namespace query_tools
 		}
 	}
 
-	void OriginQueries::TwoLetterCountryToThreeLetterCountry(const string &file_content)
+	void OriginQueries::TwoLetterCountryToThreeLetterCountry(const wxString &file_content)
 	{
-		string json_string = GetJsonString(R"(a\=\{us\:.*?\})", file_content);
+		string json_string = GetJsonString(R"(a\=\{us\:.*?\})", file_content.utf8_string());
 		if (!json_string.empty())
 		{
 			replace_string(json_string, "{", "{\"");
@@ -391,16 +356,16 @@ namespace query_tools
 
 			wxString json_file_path = origin_data_api + origin_index_html.substr(start_pos, end_pos - start_pos);
 			json_file_path.Replace("{num}", GenerateNumberInString(1, 4));
-			string file_content = GetFileContentFromURL(json_file_path.ToStdString());
+			wxString file_content = GetFileContentFromURL(json_file_path);
 
-			if (file_content.empty())
+			if (file_content.IsEmpty())
 			{
 				return;
 			}
 
 			try
 			{
-				json locale_json = json::parse(file_content);
+				json locale_json = json::parse(file_content.utf8_string());
 				for (auto &[key, value] : locale_json.items())
 				{
 					string key_str = key;
@@ -438,7 +403,7 @@ namespace query_tools
 		supercat_full_url.Replace("{country2letter}", two_letter_country_code);
 		supercat_full_url.Replace("{locale}", lng_code);
 
-		return GetFileContentFromURL(supercat_full_url.ToStdString());
+		return GetFileContentFromURL(supercat_full_url).utf8_string();
 	}
 
 	string OriginQueries::KeywordTranslation(const string &origin_display_language_code, const std::string &keyword)
@@ -463,7 +428,7 @@ namespace query_tools
 		price_query_url.Replace("{country2letter}", two_letter_country_code);
 		price_query_url.Replace("{locale}", language_code_underline);
 		price_query_url.Replace("{currency}", currency);
-		return GetFileContentFromURL(price_query_url.ToStdString());
+		return GetFileContentFromURL(price_query_url).utf8_string();
 	}
 
 	void OriginQueries::UnpackSupercatData(const map<string, string> &two_letter_country_map_to_game_info, const map<string, vector<string>> &two_letter_country_map_to_discount_list, const std::string &language_code_underline, map<string, vector<string>> &two_letter_country_map_to_discount_offer_id_list)
@@ -717,8 +682,17 @@ namespace query_tools
 
 		if (keyword_translations.find(reformat_lng_code) != keyword_translations.end()) return;
 
-		string file_content = GetFileContentFromURL(translations_url.ToStdString());
-		json origin_keyword = json::parse(file_content);
+		wxString file_content = GetFileContentFromURL(translations_url);
+		json origin_keyword;
+		try
+		{
+			origin_keyword = json::parse(file_content.utf8_string());
+		}
+		catch (json::exception &ex)
+		{
+			wxMessageBox(ex.what(), __FUNCTION__);
+		}
+
 		for (auto each_node : origin_keyword)
 		{
 			for (auto &[key, value] : each_node.items())
@@ -726,6 +700,15 @@ namespace query_tools
 				keyword_translations[reformat_lng_code][wxString::FromUTF8(key).ToStdString()] = wxString::FromUTF8(value).ToStdString();
 			}
 		}
+	}
+
+	void OriginQueries::InitialTimeSettings()
+	{
+		time_t local_raw_time = time(nullptr);
+		tm temp_tm = *gmtime(&local_raw_time);
+		temp_tm.tm_isdst = -1;
+		time_t gmt_time = mktime(&temp_tm);
+		time_zone_hours = difftime(local_raw_time, gmt_time) / 60 / 60;
 	}
 
 	void OriginQueries::DownloadGameList(string two_letter_country_code, string origin_display_language_code, function<void(string newmsg)> update_progress)
@@ -755,17 +738,17 @@ namespace query_tools
 		map<string, string> game_info_mapping;
 		for (auto &[country_code, handle] : game_info_handles)
 		{
-			update_progress("");
+			//update_progress("");
 			game_info_mapping[country_code] = handle.get();
-			update_progress("");
+			//update_progress("");
 		}
 
 		map<string, vector<string>> onslae_mapping;
 		for (auto &[country_code, handle] : onslae_handles)
 		{
-			update_progress("");
+			//update_progress("");
 			onslae_mapping[country_code] = handle.get();
-			update_progress("");
+			//update_progress("");
 		}
 
 		map<string, vector<string>> onslae_offerid_mapping;
@@ -790,9 +773,9 @@ namespace query_tools
 		{
 			for (auto &[offer_id , handle] : offer_ids)
 			{
-				update_progress("");
+				//update_progress("");
 				UpdateDiscountInfo(country_code, offer_id, handle.get());
-				update_progress("");
+				//update_progress("");
 			}
 		}
 
@@ -813,11 +796,11 @@ namespace query_tools
 		{
 			wxString onsale_full_url_start = onsale_full_url;
 			onsale_full_url_start.Replace("{start_pos}", to_string(count));
-			string file_content = GetFileContentFromURL(onsale_full_url_start.ToStdString());
+			wxString file_content = GetFileContentFromURL(onsale_full_url_start);
 			if (file_content.empty()) continue;
 			try
 			{
-				json discount_info = json::parse(file_content);
+				json discount_info = json::parse(file_content.utf8_string());
 				total = discount_info["games"]["numFound"].get<int>();
 
 				if (int num_visible = discount_info["games"]["numVisible"].get<int>(); num_visible > 0)

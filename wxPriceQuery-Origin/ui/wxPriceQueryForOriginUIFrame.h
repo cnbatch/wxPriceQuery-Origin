@@ -54,6 +54,7 @@ private:
 	query_tools::CURLGlobalThread curl_global_thread;
 	std::map<std::string, std::map<std::string, double>> offer_path_with_prices;
 
+	void InitialiseApplication();
 	void WriteCatalogueToTreeList(const std::string &language_code);
 	void WriteDetailDataToTreeList(const std::string &two_letter_country_code, const std::string &language_code,
 		std::map<std::string, std::shared_ptr<query_tools::GameDetailData>> offer_id_map_to_detail_info,

@@ -12,8 +12,8 @@ AboutDialog( parent )
 	m_hyperlink_project->SetURL("https://github.com/cnbatch/wxPriceQuery-Origin");
 	m_hyperlink_api1->SetLabelText("Euro foreign exchange reference rates");
 	m_hyperlink_api1->SetURL("https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html");
-	m_hyperlink_api2->SetLabelText("Free Forex API");
-	m_hyperlink_api2->SetURL("https://www.freeforexapi.com/");
+	m_hyperlink_api2->SetLabelText("ExchangeRate-API");
+	m_hyperlink_api2->SetURL("https://www.exchangerate-api.com/");
 }
 
 void wxPriceQueryForOriginAboutDialog::SetLanguage(languages::Language lng)
@@ -21,7 +21,7 @@ void wxPriceQueryForOriginAboutDialog::SetLanguage(languages::Language lng)
 	current_language = lng;
 
 	this->SetTitle(languages::TranslateStaticText(current_language, "about"));
-	m_staticText_version->SetLabelText(languages::TranslateStaticText(current_language, "app_title") + " (v0.2)");
+	m_staticText_version->SetLabelText(languages::TranslateStaticText(current_language, "app_title") + " (v0.3)");
 	m_staticText_name->SetLabelText(languages::TranslateStaticText(current_language, "this_project"));
 	m_staticText_apis->SetLabelText(languages::TranslateStaticText(current_language, "api_exchange_rate"));
 

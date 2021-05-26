@@ -43,6 +43,8 @@ private:
 	std::shared_ptr<query_tools::OriginQueries> queries_ptr;
 	std::shared_ptr<query_tools::CurrencyAPI> currency_api_ptr;
 
+	void InitialiseApplication();
+
 public:
 	void SetQueryClass(std::shared_ptr<query_tools::OriginQueries> input_ptr) { queries_ptr = input_ptr; }
 	void SetQueryClass(std::shared_ptr<query_tools::CurrencyAPI> input_ptr) { currency_api_ptr = input_ptr; }

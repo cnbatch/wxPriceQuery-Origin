@@ -8,13 +8,7 @@ wxPriceQueryForOriginUIFrame::wxPriceQueryForOriginUIFrame(wxWindow* parent)
 	:
 	UIFrame(parent)
 {
-	wxLocale wl;
-	wl.Init();
-	current_language = languages::EnumMappingList()[wl.GetLanguage()];
-	about_dialog.SetWindowStyleFlag(about_dialog.GetWindowStyleFlag() | wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT);
-	setting_dialog.SetWindowStyleFlag(setting_dialog.GetWindowStyleFlag() | wxFRAME_FLOAT_ON_PARENT);
-	setting_dialog.SetIcon(this->GetIcon());
-	m_timer_loading.StartOnce(100);
+	InitialiseApplication();
 }
 
 void wxPriceQueryForOriginUIFrame::OnIdle(wxIdleEvent& event)
@@ -46,22 +40,46 @@ void wxPriceQueryForOriginUIFrame::OnIdle(wxIdleEvent& event)
 		progress_dialog = new wxProgressDialog(
 			languages::TranslateStaticText(current_language, "wait"),
 			languages::TranslateStaticText(current_language, "download"),
-			100, this, wxPD_SMOOTH | wxPD_APP_MODAL);
+			100, this, wxPD_SMOOTH | wxPD_APP_MODAL | wxPD_CAN_ABORT);
 		progress_dialog->Pulse();
 		progress_dialog->Refresh();
 		progress_dialog->Update();
-		std::thread get_list_thread([&, this]()
+		std::thread get_list_thread([this]()
 			{
-				queries_ptr->DownloadGameList(origin_two_letter_country.ToStdString(), string_utitlies::to_underline_copy(origin_lng.ToStdString()), [&](std::string newmsg)
+				queries_ptr->DownloadGameList(origin_two_letter_country.ToStdString(),
+					string_utitlies::to_underline_copy(origin_lng.ToStdString()),
+					[&](std::string newmsg)
 					{
 						static int count = 0;
-						progress_dialog->Pulse();
+						count++;
+						if (progress_dialog != nullptr)
+							progress_dialog->Pulse();
 					});
-				WriteCatalogueToTreeList(string_utitlies::to_underline_copy(origin_lng.ToStdString()));
-				progress_dialog->Destroy();
-				progress_dialog = nullptr;
+
+				if (progress_dialog != nullptr)
+				{
+					WriteCatalogueToTreeList(string_utitlies::to_underline_copy(origin_lng.ToStdString()));
+					progress_dialog->Destroy();
+					progress_dialog = nullptr;
+				}
 			});
 		get_list_thread.detach();
+	}
+
+	if (progress_dialog != nullptr)
+	{
+		int current_value = progress_dialog->GetValue();
+		if (!progress_dialog->Update(-1))
+		{
+			queries_ptr->CancelWebRequest();
+			progress_dialog->Destroy();
+			progress_dialog = nullptr;
+			return;
+		}
+		progress_dialog->Update(current_value + 1);
+		progress_dialog->Pulse();
+		progress_dialog->Refresh();
+		progress_dialog->Update();
 	}
 
 	event.Skip();
@@ -293,26 +311,26 @@ void wxPriceQueryForOriginUIFrame::OnTimerLoading(wxTimerEvent& event)
 	progress_dialog = new wxProgressDialog(
 		languages::TranslateStaticText(current_language, "wait"),
 		languages::TranslateStaticText(current_language, "connect"),
-		20, this, wxPD_SMOOTH | wxPD_APP_MODAL);
+		20, this, wxPD_SMOOTH | wxPD_APP_MODAL | wxPD_CAN_ABORT);
 	this->Hide();
 	progress_dialog->Show();
 	progress_dialog->Pulse();
 	progress_dialog->Refresh();
 	progress_dialog->Update();
-	queries_ptr = std::make_shared<query_tools::OriginQueries>();
-	currency_api_ptr = std::make_shared<query_tools::CurrencyAPI>();
+	queries_ptr = std::make_shared<query_tools::OriginQueries>(this);
+	currency_api_ptr = std::make_shared<query_tools::CurrencyAPI>(this);
 
 	setting_dialog.SetQueryClass(queries_ptr);
 	setting_dialog.SetQueryClass(currency_api_ptr);
 
-	std::thread loading_thread([&, this]()
+	std::thread loading_thread([this]()
 		{
 			if (setting_dialog.InitialiseConnections([&](std::string newmsg)
 				{
 					static int count = 0;
-					progress_dialog->Pulse();
-					progress_dialog->Refresh();
-					progress_dialog->Update();
+					count++;
+					if (progress_dialog != nullptr)
+						progress_dialog->Pulse();
 				}))
 			{
 				loading_completed = true;
@@ -364,6 +382,15 @@ void wxPriceQueryForOriginUIFrame::OnTimerSearch(wxTimerEvent& event)
 	}
 }
 
+
+void wxPriceQueryForOriginUIFrame::InitialiseApplication()
+{
+	current_language = languages::EnumMappingList()[wxLocale::GetSystemLanguage()];
+	about_dialog.SetWindowStyleFlag(about_dialog.GetWindowStyleFlag() | wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT);
+	setting_dialog.SetWindowStyleFlag(setting_dialog.GetWindowStyleFlag() | wxFRAME_FLOAT_ON_PARENT);
+	setting_dialog.SetIcon(this->GetIcon());
+	m_timer_loading.StartOnce(100);
+}
 
 void wxPriceQueryForOriginUIFrame::WriteCatalogueToTreeList(const std::string &language_code)
 {

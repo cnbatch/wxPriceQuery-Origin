@@ -1,4 +1,5 @@
 #pragma once
+#include <wx/event.h>
 #include <wx/string.h>
 #include <vector>
 #include <map>
@@ -28,7 +29,10 @@ namespace query_tools
 	class OriginQueries
 	{
 	private:
+		bool cancel_web_request;
 		int time_zone_hours;
+		wxEvtHandler *window_handler;
+		std::atomic<int> running_sessions;
 
 		const std::string origin_url = "https://www.origin.com/";
 		const std::string origin_base_api = "https://api{num}.origin.com/";
@@ -38,6 +42,7 @@ namespace query_tools
 		const std::string origin_shell_translation = "defaults/web-defaults/defaults.{countrylocale}.config";
 		const std::string origin_check_offer_link = "supercarp/rating/offers/anonymous?country={country2letter}&ifSubscriber=false&locale={locale}&currency={currency}&offerIds=";
 		const std::string origin_check_single_offer = "ecommerce2/public/supercat/{offerid}/{locale}?country={country2letter}";
+		const std::string user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0";
 
 		std::string origin_index_url;
 		std::string origin_index_html;
@@ -64,13 +69,13 @@ namespace query_tools
 		std::string GenerateNumberInString(int min_num, int max_num);
 		std::string GetJsonString(std::string expression_string, const std::string &content);
 
-		std::string GetFileContentFromURL(const std::string &url, long timeout = 0);
-		std::vector<std::string> GetFileContentFromURLs(const std::vector<std::string> &urls, long timeout = 0);
+		wxString GetFileContentFromURL(wxString url, int retry = 3);
+		std::vector<wxString> GetFileContentFromURLs(const std::vector<wxString> &urls, int retry = 3);
 		void RetrieveCountryProfile(std::function<void(std::string newmsg)> update_progress);
-		void RetrieveCurrencyNameList(const std::string &file_content);
+		void RetrieveCurrencyNameList(const wxString &file_content);
 		void RetrieveCurrencySymbolList();
-		void RetrieveGameSupportedLanguageMapping(const std::string &file_content);
-		void TwoLetterCountryToThreeLetterCountry(const std::string &file_content);
+		void RetrieveGameSupportedLanguageMapping(const wxString &file_content);
+		void TwoLetterCountryToThreeLetterCountry(const wxString &file_content);
 		void RetrieveDisplayLanguageList();
 		std::string RetreiveGameInfo(wxString two_letter_country_code, wxString language_code_underline);
 		std::vector<std::string> RetrieveOnSaleList(wxString two_letter_country_code, wxString language_code_underline);
@@ -79,13 +84,17 @@ namespace query_tools
 		void ConvertBWCurrency(const std::string &two_letter_country_code, const std::string &bioware_virtual_currency_offer_id, const std::vector<std::string> &offer_ids_with_bw);
 		void UpdateDiscountInfo(const std::string &two_letter_country_code, const std::string &offer_id, const std::string &response_string);
 		void RetrieveTranslation(const std::string &three_letter_country_code, const std::string &origin_display_language_code);
-
+		void InitialTimeSettings();
 
 	public:
 		OriginQueries();
 		~OriginQueries();
 		OriginQueries & operator=(const OriginQueries&) = delete;
 		OriginQueries(const OriginQueries&) = delete;
+		OriginQueries(wxEvtHandler *current_window_handler);
+
+		void SetWindowHandler(wxEvtHandler *current_window_handler);
+		void CancelWebRequest();
 
 		std::tuple<bool, std::string> ConnectOriginServer();
 		std::map<wxString, wxString> GetDisplayLanguageList(std::function<void(std::string newmsg)> update_progress);
