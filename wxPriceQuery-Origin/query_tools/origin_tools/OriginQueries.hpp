@@ -79,7 +79,8 @@ namespace query_tools
 		void RetrieveDisplayLanguageList();
 		std::string RetreiveGameInfo(wxString two_letter_country_code, wxString language_code_underline);
 		std::vector<std::string> RetrieveOnSaleList(wxString two_letter_country_code, wxString language_code_underline);
-		std::string QueryDiscount(std::string two_letter_country_code, std::string language_code_underline, std::string currency, std::string offer_id);
+		std::string GetDiscountURL(const std::string two_letter_country_code, const std::string language_code_underline, const std::string currency, const std::string offer_id);
+		std::map<std::string, std::string> QueryDiscounts(std::map<std::string, std::string> urls);
 		void UnpackSupercatData(const std::map<std::string, std::string> &two_letter_country_map_to_game_info, const std::map<std::string, std::vector<std::string>> &two_letter_country_map_to_discount_list, const std::string &language_code_underline, std::map<std::string, std::vector<std::string>> &two_letter_country_map_to_discount_offer_id_list);
 		void ConvertBWCurrency(const std::string &two_letter_country_code, const std::string &bioware_virtual_currency_offer_id, const std::vector<std::string> &offer_ids_with_bw);
 		void UpdateDiscountInfo(const std::string &two_letter_country_code, const std::string &offer_id, const std::string &response_string);

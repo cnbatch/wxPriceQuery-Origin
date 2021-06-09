@@ -421,14 +421,27 @@ namespace query_tools
 		}
 	}
 
-	string OriginQueries::QueryDiscount(string two_letter_country_code, string language_code_underline, string currency, string offer_id)
+	string OriginQueries::GetDiscountURL(const string two_letter_country_code, const string language_code_underline, const string currency, const string offer_id)
 	{
 		wxString price_query_url = origin_base_api + origin_check_offer_link + offer_id;
 		price_query_url.Replace("{num}", GenerateNumberInString(1, 4));
 		price_query_url.Replace("{country2letter}", two_letter_country_code);
 		price_query_url.Replace("{locale}", language_code_underline);
 		price_query_url.Replace("{currency}", currency);
-		return GetFileContentFromURL(price_query_url).utf8_string();
+		return price_query_url.utf8_string();
+	}
+
+	map<string, string> OriginQueries::QueryDiscounts(map<string, string> urls)
+	{
+		map<string, string> results;
+
+		for (auto &[offer_id, url] : urls)
+		{
+			wxString response = GetFileContentFromURL(url);
+			results[offer_id] = response.utf8_string();
+		}
+
+		return results;
 	}
 
 	void OriginQueries::UnpackSupercatData(const map<string, string> &two_letter_country_map_to_game_info, const map<string, vector<string>> &two_letter_country_map_to_discount_list, const std::string &language_code_underline, map<string, vector<string>> &two_letter_country_map_to_discount_offer_id_list)
@@ -752,29 +765,32 @@ namespace query_tools
 		}
 
 		map<string, vector<string>> onslae_offerid_mapping;
-		map<string, map<string, future<string>>> discount_handles;
+		map<string, future<map<string, string>>> discount_handles;
 		UnpackSupercatData(game_info_mapping, onslae_mapping, wx_supercat_lng_code.ToStdString(), onslae_offerid_mapping);
 		if (!onslae_offerid_mapping.empty())
 		{
 			string language_code_underline_lower_string = wx_language_code_underline.ToStdString();
 			to_lower(language_code_underline_lower_string);
-			auto bind_func_discount = bind(&OriginQueries::QueryDiscount, this, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4);
+			auto bind_func_discount = bind(&OriginQueries::QueryDiscounts, this, placeholders::_1);
 			for (auto &[country_code, offer_ids] : onslae_offerid_mapping)
 			{
 				string currency = two_letter_country_map_to_currency_name[country_code].ToStdString();
+				map<string, string> onslae_urls_mapping;
 				for (auto &offer_id : offer_ids)
 				{
-					discount_handles[country_code][offer_id] = async(launch::async, bind_func_discount, country_code, language_code_underline_lower_string, currency, offer_id);
+					//discount_handles[country_code][offer_id] = async(launch::async, bind_func_discount, country_code, language_code_underline_lower_string, currency, offer_id);
+					onslae_urls_mapping[offer_id] = GetDiscountURL(country_code, language_code_underline_lower_string, currency, offer_id);
 				}
+				discount_handles[country_code] = async(launch::async, bind_func_discount, onslae_urls_mapping);
 			}
 		}
 
-		for (auto &[country_code, offer_ids] : discount_handles)
+		for (auto &[country_code, handle] : discount_handles)
 		{
-			for (auto &[offer_id , handle] : offer_ids)
+			for (auto &[offer_id, result] : handle.get())
 			{
 				//update_progress("");
-				UpdateDiscountInfo(country_code, offer_id, handle.get());
+				UpdateDiscountInfo(country_code, offer_id, result);
 				//update_progress("");
 			}
 		}
