@@ -1,8 +1,4 @@
 #include "wxPriceQueryForOriginUIFrame.h"
-#include <wx/msgdlg.h>
-#include <sstream>
-#include <chrono>
-#include "../string_utilities.hpp"
 
 wxPriceQueryForOriginUIFrame::wxPriceQueryForOriginUIFrame(wxWindow* parent)
 	:
@@ -68,18 +64,13 @@ void wxPriceQueryForOriginUIFrame::OnIdle(wxIdleEvent& event)
 
 	if (progress_dialog != nullptr)
 	{
-		int current_value = progress_dialog->GetValue();
-		if (!progress_dialog->Update(-1))
+		if (!progress_dialog->Pulse())
 		{
 			queries_ptr->CancelWebRequest();
 			progress_dialog->Destroy();
 			progress_dialog = nullptr;
 			return;
 		}
-		progress_dialog->Update(current_value + 1);
-		progress_dialog->Pulse();
-		progress_dialog->Refresh();
-		progress_dialog->Update();
 	}
 
 	event.Skip();
