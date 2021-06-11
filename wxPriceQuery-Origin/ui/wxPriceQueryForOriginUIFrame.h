@@ -58,8 +58,6 @@ private:
 	query_tools::CURLGlobalThread curl_global_thread;
 	std::map<std::string, std::map<std::string, double>> offer_path_with_prices;
 
-	std::mutex var_mutex;
-
 	void InitialiseApplication();
 	void WriteCatalogueToTreeList(const std::string &language_code);
 	void WriteDetailDataToTreeList(const std::string &two_letter_country_code, const std::string &language_code,
