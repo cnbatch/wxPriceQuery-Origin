@@ -118,6 +118,7 @@ namespace languages
 				{"download", "Downloading data from Origin Server"},
 				{"connect", "Connecting to Origin Server"},
 				{"cannot_connect", "Unable to connect Origin Server"},
+				{"get_currency", "Getting Exchange Rates of Currencies"},
 				{"message", "Message"},
 				{"conversion_failed", "conversion failed"},
 				{"search_result", "Search Results"},
@@ -133,7 +134,12 @@ namespace languages
 				{"other_game_type", "Other Game Type"},
 				{"about", "About"},
 				{"this_project", "Repository of this project on GitHub"},
-				{"api_exchange_rate", "APIs of Exchange Rates"}
+				{"api_exchange_rate", "APIs of Exchange Rates"},
+				{"access_origin", "Accessing Origin Server"},
+				{"get_regional", "Getting Regional Data From Origin Server"},
+				{"get_full_list", "Getting Full List of Games"},
+				{"get_onsale_list", "Getting On Sale List"},
+				{"get_discount_list", "Getting Discount List"}
 			};
 		}
 	};

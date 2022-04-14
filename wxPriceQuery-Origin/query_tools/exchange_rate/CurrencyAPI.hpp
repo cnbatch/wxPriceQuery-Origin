@@ -5,8 +5,10 @@
 #include <shared_mutex>
 #include <wx/event.h>
 
-namespace query_tools
+namespace currency_tools
 {
+	constexpr int retry_times = 5;
+
 	class CurrencyAPI
 	{
 	private:
@@ -16,7 +18,7 @@ namespace query_tools
 		std::map<int, wxString> web_id_map_string;
 		std::string base_currency;
 		
-		wxString GetFileContentFromURL(wxString url);
+		wxString GetFileContentFromURL(wxString url, int retry = retry_times);
 		void UpdateExchangeRates();
 		std::vector<std::string> other_currency_names = { "TWD", "ARS", "CLP", "COP", "EGP", "VND" };
 

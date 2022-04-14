@@ -9,6 +9,8 @@
 
 namespace query_tools
 {
+	constexpr int retry_times = 30;
+
 	struct GameDetailData
 	{
 		wxString offer_id;
@@ -32,7 +34,7 @@ namespace query_tools
 		bool cancel_web_request;
 		int time_zone_hours;
 		wxEvtHandler *window_handler;
-		std::atomic<int> running_sessions;
+		std::atomic_int running_sessions;
 
 		const std::string origin_url = "https://www.origin.com/";
 		const std::string origin_base_api = "https://api{num}.origin.com/";
@@ -69,8 +71,8 @@ namespace query_tools
 		std::string GenerateNumberInString(int min_num, int max_num);
 		std::string GetJsonString(std::string expression_string, const std::string &content);
 
-		wxString GetFileContentFromURL(wxString url, int retry = 3);
-		std::vector<wxString> GetFileContentFromURLs(const std::vector<wxString> &urls, int retry = 3);
+		wxString GetFileContentFromURL(wxString url, int retry = retry_times);
+		std::vector<wxString> GetFileContentFromURLs(const std::vector<wxString> &urls, int retry = retry_times);
 		void RetrieveCountryProfile(std::function<void(std::string newmsg)> update_progress);
 		void RetrieveCurrencyNameList(const wxString &file_content);
 		void RetrieveCurrencySymbolList();

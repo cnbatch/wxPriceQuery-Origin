@@ -14,6 +14,7 @@
 #include <rapidxml.h>
 #endif
 #include "../../string_utilities.hpp"
+#include <wx/file.h>
 
 namespace query_tools
 {
@@ -58,9 +59,14 @@ namespace query_tools
 		}
 
 		running_sessions--;
-
+		//wxFile output("log.log", wxFile::write_append);
+		//output.Write("URL: " + url + " | retry: " + to_string(retry) + "\r\n");
+		//output.Close();
 		if (file_content = web_request.GetResponse().AsString(); file_content.IsEmpty())
 		{
+			//wxFile output("log.log", wxFile::write_append);
+			//output.Write("URL: " + url + " | file_content size(): " + to_string(file_content.size()) + "\r\n");
+			//output.Close();
 			if (0 != retry)
 				file_content = GetFileContentFromURL(url, retry - 1);
 		}
@@ -195,13 +201,14 @@ namespace query_tools
 				partial_url.erase(0, 1);
 			}
 			wxString js_file_path = origin_url + partial_url;
-			get_value_handles.emplace_back(async(launch::async, bind(&OriginQueries::GetFileContentFromURL, this, placeholders::_1, placeholders::_2), js_file_path, 3));
+			get_value_handles.emplace_back(async(launch::async, bind(&OriginQueries::GetFileContentFromURL, this, placeholders::_1, placeholders::_2), js_file_path, retry_times));
 		}
+
+		update_progress("access_origin");
 
 		wxString file_content;
 		for (auto &handle : get_value_handles)
 		{
-			//update_progress("");
 			file_content += handle.get();
 		}
 
@@ -212,9 +219,10 @@ namespace query_tools
 			set_value_handles.emplace_back(async(launch::async, bind(&OriginQueries::RetrieveGameSupportedLanguageMapping, this, placeholders::_1), reference_wrapper(file_content)));
 		}
 
+		update_progress("get_regional");
+
 		for (auto &handle : set_value_handles)
 		{
-			//update_progress("");
 			handle.wait();
 		}
 	}
@@ -748,20 +756,20 @@ namespace query_tools
 			onslae_handles[country_code.ToStdString()] = async(launch::async, bind_func_onsale, country_code, wx_supercat_lng_code);
 		}
 
+		update_progress("get_full_list");
+
 		map<string, string> game_info_mapping;
 		for (auto &[country_code, handle] : game_info_handles)
 		{
-			//update_progress("");
 			game_info_mapping[country_code] = handle.get();
-			//update_progress("");
 		}
+
+		update_progress("get_onsale_list");
 
 		map<string, vector<string>> onslae_mapping;
 		for (auto &[country_code, handle] : onslae_handles)
 		{
-			//update_progress("");
 			onslae_mapping[country_code] = handle.get();
-			//update_progress("");
 		}
 
 		map<string, vector<string>> onslae_offerid_mapping;
@@ -785,13 +793,13 @@ namespace query_tools
 			}
 		}
 
+		update_progress("get_discount_list");
+
 		for (auto &[country_code, handle] : discount_handles)
 		{
 			for (auto &[offer_id, result] : handle.get())
 			{
-				//update_progress("");
 				UpdateDiscountInfo(country_code, offer_id, result);
-				//update_progress("");
 			}
 		}
 

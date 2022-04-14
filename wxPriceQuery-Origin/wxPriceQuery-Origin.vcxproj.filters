@@ -69,9 +69,6 @@
     <ClCompile Include="query_tools\origin_tools\OriginQueries.cpp">
       <Filter>Source Files\query_tools\origin_tools</Filter>
     </ClCompile>
-    <ClCompile Include="query_tools\CURLGlobalThread.cpp">
-      <Filter>Source Files\query_tools</Filter>
-    </ClCompile>
     <ClCompile Include="string_utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,9 +100,6 @@
     </ClInclude>
     <ClInclude Include="query_tools\exchange_rate\CurrencyAPI.hpp">
       <Filter>Header Files\query_tools\exchange_rate</Filter>
-    </ClInclude>
-    <ClInclude Include="query_tools\CURLGlobalThread.hpp">
-      <Filter>Header Files\query_tools</Filter>
     </ClInclude>
     <ClInclude Include="string_utilities.hpp">
       <Filter>Header Files</Filter>

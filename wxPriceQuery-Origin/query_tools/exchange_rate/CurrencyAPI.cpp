@@ -11,7 +11,7 @@
 #endif
 #include "../../string_utilities.hpp"
 
-namespace query_tools
+namespace currency_tools
 {
 	using namespace std;
 	using nlohmann::json;
@@ -56,8 +56,9 @@ namespace query_tools
 		return amount / exchange_rates.at(from_currency_code) * exchange_rates.at(to_currency_code);
 	}
 
-	wxString CurrencyAPI::GetFileContentFromURL(wxString url)
+	wxString CurrencyAPI::GetFileContentFromURL(wxString url, int retry)
 	{
+		wxString file_content;
 		wxString trim_url = url;
 		trim_url.Trim();
 
@@ -69,7 +70,7 @@ namespace query_tools
 			web_request = wxWebSession::GetDefault().CreateRequest(window_handler, trim_url);
 
 		if (!web_request.IsOk())
-			return wxString();
+			return file_content;
 
 		web_request.SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0");
 
@@ -77,6 +78,12 @@ namespace query_tools
 		while (web_request.GetState() == wxWebRequest::State_Active)
 		{
 			this_thread::sleep_for(100ms);
+		}
+
+		if (file_content = web_request.GetResponse().AsString(); file_content.IsEmpty())
+		{
+			if (0 != retry)
+				file_content = GetFileContentFromURL(url, retry - 1);
 		}
 
 		return web_request.GetResponse().AsString();
@@ -91,8 +98,8 @@ namespace query_tools
 		string exchangerate_api_url = "https://open.er-api.com/v6/latest/EUR";
 
 
-		auto wait_0 = async(launch::async, bind(&CurrencyAPI::GetFileContentFromURL, this, placeholders::_1), ecb_url);
-		auto wait_1 = async(launch::async, bind(&CurrencyAPI::GetFileContentFromURL, this, placeholders::_1), exchangerate_api_url);
+		auto wait_0 = async(launch::async, bind(&CurrencyAPI::GetFileContentFromURL, this, placeholders::_1, placeholders::_2), ecb_url, retry_times);
+		auto wait_1 = async(launch::async, bind(&CurrencyAPI::GetFileContentFromURL, this, placeholders::_1, placeholders::_2), exchangerate_api_url, retry_times);
 		string currency_xml_string = wait_0.get().ToStdString();
 		string currency_json_string = wait_1.get().ToStdString();
 

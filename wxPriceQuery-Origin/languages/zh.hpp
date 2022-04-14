@@ -118,6 +118,7 @@ namespace languages
 				{"download", "正在从 Origin 服务器下载数据"},
 				{"connect", "正在连接到 Origin 服务器"},
 				{"cannot_connect", "无法连接到 Origin 服务器"},
+				{"get_currency", "正在获取货币汇率"},
 				{"message", "消息"},
 				{"conversion_failed", "转换失败"},
 				{"search_result", "搜索结果"},
@@ -133,7 +134,12 @@ namespace languages
 				{"other_game_type", "其它游戏类型"},
 				{"about", "关于"},
 				{"this_project", "本软件已在 Github 开源"},
-				{"api_exchange_rate", "使用到的汇率 API"}
+				{"api_exchange_rate", "使用到的汇率 API"},
+				{"access_origin", "正在访问 Origin 服务器"},
+				{"get_regional", "正在从 Origin 服务器获取区域数据"},
+				{"get_full_list", "正在获取游戏列表"},
+				{"get_onsale_list", "正在获取促销列表"},
+				{"get_discount_list", "正在获取折扣列表"}
 			};
 		}
 	};
@@ -253,6 +259,7 @@ namespace languages
 				{"download", "正在從 Origin 伺服器下載資料"},
 				{"connect", "正在連接到 Origin 伺服器"},
 				{"cannot_connect", "無法連接到 Origin 伺服器"},
+				{"get_currency", "正在獲取貨幣匯率"},
 				{"message", "消息"},
 				{"conversion_failed", "轉換失敗"},
 				{"search_result", "搜尋結果"},
@@ -268,7 +275,12 @@ namespace languages
 				{"other_game_type", "其它遊戲類型"},
 				{"about", "關於"},
 				{"this_project", "本軟件已在 Github 開源"},
-				{"api_exchange_rate", "使用到的滙率 API"}
+				{"api_exchange_rate", "使用到的滙率 API"},
+				{"access_origin", "正在訪問 Origin 伺服器"},
+				{"get_regional", "正在從 Origin 伺服器獲取區域資料"},
+				{"get_full_list", "正在獲取遊戲列表"},
+				{"get_onsale_list", "正在獲取促銷列表"},
+				{"get_discount_list", "正在獲取折扣列表"}
 			};
 		}
 	};

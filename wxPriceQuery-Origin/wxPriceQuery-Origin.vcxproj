@@ -154,7 +154,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="languages\languages.cpp" />
-    <ClCompile Include="query_tools\CURLGlobalThread.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="query_tools\exchange_rate\CurrencyAPI.cpp" />
     <ClCompile Include="query_tools\origin_tools\OriginQueries.cpp" />
@@ -168,7 +167,6 @@
     <ClInclude Include="app.h" />
     <ClInclude Include="languages\en.hpp" />
     <ClInclude Include="languages\languages.hpp" />
-    <ClInclude Include="query_tools\CURLGlobalThread.hpp" />
     <ClInclude Include="query_tools\exchange_rate\CurrencyAPI.hpp" />
     <ClInclude Include="query_tools\origin_tools\OriginQueries.hpp" />
     <ClInclude Include="resource.h" />

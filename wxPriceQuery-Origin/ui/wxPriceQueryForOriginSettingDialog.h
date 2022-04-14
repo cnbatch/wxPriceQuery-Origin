@@ -41,13 +41,13 @@ private:
 	std::vector<wxString> game_language_selection_list;
 	std::vector<wxString> country_selection_list;
 	std::shared_ptr<query_tools::OriginQueries> queries_ptr;
-	std::shared_ptr<query_tools::CurrencyAPI> currency_api_ptr;
+	std::shared_ptr<currency_tools::CurrencyAPI> currency_api_ptr;
 
 	void InitialiseApplication();
 
 public:
 	void SetQueryClass(std::shared_ptr<query_tools::OriginQueries> input_ptr) { queries_ptr = input_ptr; }
-	void SetQueryClass(std::shared_ptr<query_tools::CurrencyAPI> input_ptr) { currency_api_ptr = input_ptr; }
+	void SetQueryClass(std::shared_ptr<currency_tools::CurrencyAPI> input_ptr) { currency_api_ptr = input_ptr; }
 	void SetQueryClass(std::nullptr_t input_ptr) { queries_ptr = nullptr; currency_api_ptr = nullptr; }
 	bool InitialiseConnections(std::function<void(std::string newmsg)> update_progress);
 	void GetClientSettings(languages::Language &interface_lng, wxString &selected_currency, wxString &origin_lng, wxString &origin_country);

@@ -119,7 +119,9 @@ void wxPriceQueryForOriginSettingDialog::InitialiseApplication()
 
 bool wxPriceQueryForOriginSettingDialog::InitialiseConnections(std::function<void(std::string newmsg)> update_progress)
 {
-	auto get_currency = std::bind(&query_tools::CurrencyAPI::GetAvailableCurrency, currency_api_ptr.get());
+	update_progress("get_currency");
+
+	auto get_currency = std::bind(&currency_tools::CurrencyAPI::GetAvailableCurrency, currency_api_ptr.get());
 	auto currency_names = std::async(std::launch::async, get_currency);
 
 	for (auto &currency_name : currency_names.get())
@@ -127,6 +129,8 @@ bool wxPriceQueryForOriginSettingDialog::InitialiseConnections(std::function<voi
 		currency_selection_list.push_back(currency_name);
 		m_choice_currency->AppendString(languages::TranslateCurrencyName(current_language, currency_name));
 	}
+	
+	update_progress("connect");
 
 	auto [result, error_str] = queries_ptr->ConnectOriginServer();
 	if (result)

@@ -44,12 +44,11 @@ void wxPriceQueryForOriginUIFrame::OnIdle(wxIdleEvent& event)
 			{
 				queries_ptr->DownloadGameList(origin_two_letter_country.ToStdString(),
 					string_utitlies::to_underline_copy(origin_lng.ToStdString()),
-					[&](std::string newmsg)
+					[this](std::string static_text)
 					{
-						static int count = 0;
-						count++;
-						if (progress_dialog != nullptr)
-							progress_dialog->Pulse();
+						wxThreadEvent *thread_update_event = new wxThreadEvent(THREAD_UPDATE_UI);
+						thread_update_event->SetString(languages::TranslateStaticText(current_language, static_text));
+						this->QueueEvent(thread_update_event);
 					});
 
 				if (progress_dialog != nullptr)
@@ -307,21 +306,19 @@ void wxPriceQueryForOriginUIFrame::OnTimerLoading(wxTimerEvent& event)
 	progress_dialog->Show();
 	progress_dialog->Pulse();
 	progress_dialog->Refresh();
-	progress_dialog->Update();
 	queries_ptr = std::make_shared<query_tools::OriginQueries>(this);
-	currency_api_ptr = std::make_shared<query_tools::CurrencyAPI>(this);
+	currency_api_ptr = std::make_shared<currency_tools::CurrencyAPI>(this);
 
 	setting_dialog.SetQueryClass(queries_ptr);
 	setting_dialog.SetQueryClass(currency_api_ptr);
 
 	std::thread loading_thread([this]()
 		{
-			if (setting_dialog.InitialiseConnections([&](std::string newmsg)
+			if (setting_dialog.InitialiseConnections([this](std::string static_text)
 				{
-					static int count = 0;
-					count++;
-					if (progress_dialog != nullptr)
-						progress_dialog->Pulse();
+					wxThreadEvent *thread_update_event = new wxThreadEvent(THREAD_UPDATE_UI);
+					thread_update_event->SetString(languages::TranslateStaticText(current_language, static_text));
+					this->QueueEvent(thread_update_event);
 				}))
 			{
 				loading_completed = true;
@@ -381,6 +378,7 @@ void wxPriceQueryForOriginUIFrame::InitialiseApplication()
 	setting_dialog.SetWindowStyleFlag(setting_dialog.GetWindowStyleFlag() | wxFRAME_FLOAT_ON_PARENT);
 	setting_dialog.SetIcon(this->GetIcon());
 	m_timer_loading.StartOnce(100);
+	Bind(THREAD_UPDATE_UI, &wxPriceQueryForOriginUIFrame::UpdateProgressMessage, this);
 }
 
 void wxPriceQueryForOriginUIFrame::WriteCatalogueToTreeList(const std::string &language_code)
@@ -579,5 +577,13 @@ void wxPriceQueryForOriginUIFrame::SetupLabelText()
 			m_treeListCtrl_ItemPrice->AppendColumn(languages::TranslateCurrencyName(current_language, currency_name), wxCOL_WIDTH_DEFAULT, wxALIGN_CENTRE, wxCOL_RESIZABLE);
 			column_pos = count++;
 		}
+	}
+}
+
+void wxPriceQueryForOriginUIFrame::UpdateProgressMessage(wxThreadEvent & event)
+{
+	if (progress_dialog != nullptr)
+	{
+		progress_dialog->Pulse(event.GetString());
 	}
 }
